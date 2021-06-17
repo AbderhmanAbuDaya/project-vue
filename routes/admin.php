@@ -20,3 +20,4 @@ Route::group(['prefix'=>'admin/','namespace'=>'admin','middleware'=>'auth'],func
    })->name('aa') ;
 });
 
+

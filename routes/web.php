@@ -32,3 +32,6 @@ Route::get('id',function (){
 
 return $payment = $paymentService->fetch('a38af26e-02bb-497a-87ce-054c359d6419');
 });
+Route::get('/{vue_capture?}', function () {
+    return view('home', ['app_path' => 'load different vuejs apps here in my routes/web.php file based on the url']);
+})->where('vue_capture', '[\/\w\.-]*');
