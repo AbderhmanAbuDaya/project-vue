@@ -4,6 +4,7 @@ import Dashboard from "./components/Dashboard";
 import Profile from "./components/Profile";
 import Users from "./components/Users";
 import Developer from "./components/Developer";
+import NotFound from "./components/NotFound";
 Vue.use(VueRouter);
 
 const routes = [
@@ -26,6 +27,11 @@ const routes = [
         path: "/developer",
         name: "Developer",
         component: Developer
+    },
+    {
+        path: "*",
+        name: "NotFound",
+        component: NotFound
     },
 ];
 

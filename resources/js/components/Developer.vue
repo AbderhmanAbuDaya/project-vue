@@ -1,7 +1,9 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <not-found v-if="!this.$gate.isAdmin()" ></not-found>
+
+            <div class="col-md-8" v-if="this.$gate.isAdmin()">
                 <div class="card">
                     <div class="card-header">Developer Component</div>
 

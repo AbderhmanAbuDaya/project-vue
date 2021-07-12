@@ -10,7 +10,7 @@
                         <h5 class="widget-user-desc text-right">Web Designer</h5>
                     </div>
                     <div class="widget-user-image">
-                        <img class="img-circle" src="assets/img/profile.png" alt="User Avatar">
+                        <img class="img-circle" :src="getProfilePhoto()" alt="User Avatar">
                     </div>
                     <div class="card-footer">
                         <div class="row">
@@ -91,7 +91,7 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="password" class="col-sm-12 control-label">Passport (leave empty if not changing)</label>
+                                                    <label for="password" class="col-sm-12 control-label">Password (leave empty if not changing)</label>
 
                                                     <div class="col-sm-12">
                                                         <input type="password"
@@ -146,6 +146,10 @@
             }
         },
         methods: {
+
+            getProfilePhoto(){
+                return (this.form.photo.length > 200) ? this.form.photo : "./assets/img/profile/" + this.form.photo;
+            },
             updateInfo(){
                 this.$Progress.start();
                 if(this.form.password == ''){
@@ -154,9 +158,11 @@
                 this.form.put('api/profile')
                     .then(()=>{
                         Fire.$emit('AfterCreate');
+
                         this.$Progress.finish();
                     })
                     .catch(() => {
+                        Fire.$emit('AfterCreate');
                         this.$Progress.fail();
                     });
             },
@@ -176,22 +182,26 @@
                 }
                let $this=this;
                 reader.onloadend = (file) => {
-                    console.log(reader.result);
+                    // console.log(reader.result);
                     $this.form.photo = reader.result;
-                    console.log(this.form.photo);
+                    // console.log(this.form.photo);
                 }
                 reader.readAsDataURL(file);
             },
-
-            getProfilePhoto() {
-                let photo = (this.form.photo.length > 200) ? this.form.photo : "img/profile/" + this.form.photo;
-                return photo;
-            },
-        },
-            created() {
-                console.log('sss')
+            loadProfileData(){
                 axios.get("api/profile")
                     .then(({data}) => (this.form.fill(data)));
+
+            }
+
+
+        },
+            created() {
+       this.loadProfileData()
+
+                Fire.$on('AfterCreate',()=>{
+                    this.loadProfileData()
+                });
             }
 
     }

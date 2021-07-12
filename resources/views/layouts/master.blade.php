@@ -34,14 +34,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <li class="nav-item d-none d-sm-inline-block p-lg-2">
                 <div class="navbar-search-block">
                     <form class="form-inline">
+                        <!-- SEARCH FORM -->
                         <div class="input-group input-group-sm">
-                            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                            <input class="form-control form-control-navbar" @keyup="searchit" v-model="search" type="search" placeholder="Search" aria-label="Search">
                             <div class="input-group-append">
-                                <button class="btn btn-navbar" type="submit">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                    <i class="fas fa-times"></i>
+                                <button class="btn btn-navbar" @click="searchit">
+                                    <i class="fa fa-search"></i>
                                 </button>
                             </div>
                         </div>
@@ -59,7 +57,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="index3.html" class="brand-link">
-            <img src="{{asset('assets/img/logo2.png')}}" alt="Project Vue Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <img src="{{asset('assets/img/logo2.png')}}" alt="Project Vue Logo"  class="brand-image img-circle elevation-3" style="opacity: .8">
             <span class="brand-text font-weight-light">Project Vue</span>
         </a>
 
@@ -67,12 +65,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <div class="sidebar">
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+
                 <div class="image">
-                    <img src="{{asset('assets/img/profile.png')}}{{asset('assets/img/profile.png')}}" class="img-circle elevation-2" alt="User Image">
+                    <img  src="./assets/img/profile/{{auth()->user()->photo}}" class="img-circle elevation-2" id="myImage" alt="User Image">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block">@if(auth()->check()){{auth()->user()->name}} @endif</a>
                 </div>
+
             </div>
 
 
@@ -89,6 +89,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                          </p>
                         </router-link>
                     </li>
+                    @canany(['isAdmin','isAuthor'])
                     <li class="nav-item ">
                         <a href="#" class="nav-link ">
                             <i class="nav-icon fas fa-tasks green"></i>
@@ -113,6 +114,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </li>
                         </ul>
                     </li>
+                    @endcanany
+                    @canany(['isAdmin'])
                     <li class="nav-item">
                         <router-link to="/developer"  class="nav-link ">
                             <i class="nav-icon fas fa-cogs blue"></i>
@@ -121,6 +124,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </p>
                         </router-link>
                     </li>
+                    @endcanany
                     <li class="nav-item">
                         <router-link to="/profile"  class="nav-link ">
                             <i class="nav-icon fas fa-user orange"></i>
@@ -196,7 +200,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </footer>
 </div>
 <!-- ./wrapper -->
-
+@auth
+    <script>window.user=@json(auth()->user())</script>
+@endauth
 <!-- REQUIRED SCRIPTS -->
 <script src="{{asset('js/app.js')}}"></script>
 
@@ -206,6 +212,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {{--    window.location.href = "{{route('login')}}"--}}
 
     {{--}--}}
+    Fire.$on('changePhoto',(img)=>{
+        document.getElementById("myImage").src = `{{asset('assets/img/profile/')}}/${img}`;
+
+    });
+
 </script>
+
 </body>
 </html>

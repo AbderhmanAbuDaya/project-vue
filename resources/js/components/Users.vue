@@ -1,6 +1,7 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center ">
+        <not-found v-if="!this.$gate.isAdminOrAuthor()" ></not-found>
+        <div class="row justify-content-center " v-if="this.$gate.isAdminOrAuthor()">
             <div class="col-md-12 mt-1">
                 <div class="card">
                     <div class="card-header">
@@ -35,6 +36,8 @@
                                 <a  @click="deleteUser(user.id)"><i class="fa fa-trash red"></i></a>
                                 </td>
                             </tr>
+                            <pagination :data="users" @pagination-change-page="getResults"></pagination>
+
                             </tbody>
                         </table>
                     </div>
@@ -224,15 +227,31 @@ export default {
   },
 
   methods:{
-      loadUsers(){
-          axios.get('api/user')
-               .then(({data})=>{this.users=data
-                   setTimeout(() => {
-                       this.$Progress.finish()
-                   }, 500)
-               }).catch(err=>{
-                   this.$Progress.fail()
-          })
+      getResults(page = 1) {
+          axios.get('api/user?page=' + page)
+              .then(response => {
+                  this.users = response.data;
+              });
+      },
+      loadUsers() {
+          if (this.$gate.isAdminOrAuthor()){
+
+                  axios.get('api/user')
+                      .then(({data}) => {
+
+                          this.users = data
+                          console.log(this.users);
+                          setTimeout(() => {
+                              this.$Progress.finish()
+                          }, 500)
+                      }).catch(err => {
+                      this.$Progress.fail()
+                  })
+
+      }else {
+              this.$Progress.finish()
+
+          }
       },
       editUser($user){
         $('#editUser').modal('show');
@@ -311,7 +330,7 @@ export default {
                       Swal.fire({
                           icon: 'error',
                           title: 'Oops...',
-                          text: 'Something went wrong!',
+                          text:`${err.message}!`,
                           footer: '<a href="">Try agin</a>'
                       })
                   });
@@ -322,6 +341,15 @@ export default {
   },
     created() {
         this.$Progress.start()
+        Fire.$on('searching',() => {
+            let query = this.$parent.search;
+            axios.get('api/findUser?q=' + query)
+                .then((data) => {
+                    this.users = data.data
+                })
+                .catch(() => {
+                })
+        })
         this.loadUsers();
         Fire.$on('AfterCreate',()=>{
            this.loadUsers()

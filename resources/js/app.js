@@ -105,9 +105,33 @@ Vue.component(
     'passport-personal-access-tokens',
     require('./components/passport/PersonalAccessTokens.vue').default
 );
+Vue.component(
+    'not-found',
+    require('./components/NotFound.vue').default
+);
+Vue.component('pagination', require('laravel-vue-pagination'));
+
+import Gate from "./Gate";
+Vue.prototype.$gate=new Gate(window.user);
 const app = new Vue({
     el: '#app',
     router,
+   data(){
+        return {
+            search:''
+
+        };
+     },
+    methods:{
+        searchit:_.debounce(() => {
+            Fire.$emit('searching');
+            },1000),
+
+            printme() {
+                window.print();
+            }
+
+    }
 
     // watch:{
     //     $route (to, from){

@@ -13,6 +13,8 @@ class UserController extends Controller
 
     public function __construct(){
         $this->middleware('auth:api');
+//        $this->authorize('isAdmin');
+
 
     }
 
@@ -84,19 +86,21 @@ class UserController extends Controller
             Image::make($request->photo)->save(public_path('assets/img/profile/') . $name);
             $request->merge(['photo' => $name]);
 
-            $userPhoto = public_path('img/profile/') . $currentPhoto;
+            $userPhoto = public_path('assets/img/profile/') . $currentPhoto;
+
             if (file_exists($userPhoto)) {
                 @unlink($userPhoto);
             }
 
-            if(!empty($request->password)){
-                $request->merge(['password' => Hash::make($request['password'])]);
-            }
 
-
-            $user->update($request->all());
-            return ['message' => "Success"];
         }
+        if(!empty($request->password)){
+            $request->merge(['password' => Hash::make($request['password'])]);
+        }
+
+
+        $user->update($request->all());
+        return ['message' => "Success"];
     }
 
     /**
@@ -142,7 +146,23 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('isAdmin');
          User::find($id)->delete();
          return ['message'=>'user deleted'];
+    }
+
+    public function search(){
+
+        if ($search = \Request::get('q')) {
+            $users = User::where(function($query) use ($search){
+                $query->where('name','LIKE',"%$search%")
+                    ->orWhere('email','LIKE',"%$search%");
+            })->paginate(20);
+        }else{
+            $users = User::latest()->paginate(5);
+        }
+
+        return $users;
+
     }
 }

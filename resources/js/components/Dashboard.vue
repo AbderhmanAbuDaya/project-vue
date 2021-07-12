@@ -1,6 +1,8 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
+        <not-found v-if="!this.$gate.isAdmin()" ></not-found>
+
+        <div class="row justify-content-center" v-if="this.$gate.isAdmin()">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">Dashboard Component</div>
